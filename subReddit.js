@@ -4,6 +4,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 const { executablePath } = require("puppeteer");
 const { input } = require("@inquirer/prompts");
+const { createFile, fileFormats } = require("./writeFile");
 
 const sleepFor = async (page, min, max) => {
   const sleepDuration = Math.floor(Math.random() * (max - min) + min);
@@ -11,12 +12,12 @@ const sleepFor = async (page, min, max) => {
 };
 
 const fetchSubRedditInfo = async (page) => {
-  await page.waitForSelector("shreddit-subreddit-header");
-  await page.waitForSelector("#position faceplate-number");
-  await page.waitForSelector(
-    `faceplate-expandable-section-helper > details > summary > [noun="rules"] > li > div > span > span:nth-child(2)`
-  );
-  await page.waitForSelector(`ul [role="presentation"]`);
+  // await page.waitForSelector("shreddit-subreddit-header");
+  // await page.waitForSelector("#position");
+  // await page.waitForSelector(
+  //   `faceplate-expandable-section-helper > details > summary > [noun="rules"] > li > div > span > span:nth-child(2)`
+  // );
+  // await page.waitForSelector(`ul [role="presentation"]`);
 
   const subRedditInfo = await page.evaluate(() => {
     const headerContainer = document.querySelector("shreddit-subreddit-header");
@@ -24,9 +25,12 @@ const fetchSubRedditInfo = async (page) => {
     const displayName = headerContainer.getAttribute("display-name").trim();
     const description = headerContainer.getAttribute("description").trim();
     const members = headerContainer.getAttribute("subscribers");
-    const rankBySize = headerContainer
-      .querySelector("#position faceplate-number")
-      .getAttribute("number");
+    const rankBySize =
+      headerContainer
+        .querySelector("#position faceplate-number")
+        ?.getAttribute("number") ||
+      headerContainer.querySelector("#position")?.textContent.trim() ||
+      "";
     const rules = Array.from(
       document.querySelectorAll(
         `faceplate-expandable-section-helper > details > summary > [noun="rules"] > li > div > span > span:nth-child(2)`
@@ -96,6 +100,7 @@ async function fetchRedditPosts(postTargetCount = 20, subReddit) {
 
   // Launch the browser and open a new blank page
   const browser = await puppeteer.launch({
+    // headless: "new",
     headless: false,
     executablePath: executablePath(),
   });
@@ -133,13 +138,7 @@ async function fetchRedditPosts(postTargetCount = 20, subReddit) {
 
   const data = { subRedditInfo, posts };
 
-  fs.writeFile(
-    `subRedditPosts-${Date.now()}.out.json`,
-    JSON.stringify(data),
-    (e) => {
-      if (e) console.log(e);
-    }
-  );
+  createFile(subReddit ? subReddit+"-subreddit" : "reddit", data, fileFormats.JSON);
 
   await browser.close();
   console.log("Job is done.....");

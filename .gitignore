@@ -130,8 +130,7 @@ dist
 .pnp.*
 
 # outputdata
-*.out.json
-*.out.csv
+out
 
 # secret files
 joyp.js
