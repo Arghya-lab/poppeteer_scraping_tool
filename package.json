@@ -1,0 +1,26 @@
+{
+  "name": "puppet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "toJson": "node csvToJSON.js",
+    "joyp": "node joyp.js",
+    "maps": "node maps.js",
+    "tweet": "node tweet.js",
+    "reddit": "node subReddit.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@inquirer/prompts": "^3.3.2",
+    "chalk": "^5.3.0",
+    "csvtojson": "^2.0.10",
+    "html-to-text": "^9.0.5",
+    "puppeteer": "^21.7.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {},
+  "description": ""
+}
